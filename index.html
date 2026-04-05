@@ -1,0 +1,215 @@
+
+<style>
+  .rel-wrap { font-family: var(--font-sans); padding: 1rem 0; }
+  .header { text-align: center; border-bottom: 0.5px solid var(--color-border-tertiary); padding-bottom: 1.5rem; margin-bottom: 1.5rem; }
+  .header h1 { font-size: 20px; font-weight: 500; margin: 0 0 4px; color: var(--color-text-primary); }
+  .header p { font-size: 13px; color: var(--color-text-secondary); margin: 0; }
+  .section-title { font-size: 13px; font-weight: 500; color: var(--color-text-secondary); text-transform: uppercase; letter-spacing: 0.06em; margin: 1.5rem 0 0.75rem; }
+  .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(0, 1fr)); gap: 10px; margin-bottom: 1.5rem; }
+  .card { background: var(--color-background-secondary); border-radius: var(--border-radius-md); padding: 0.75rem 1rem; }
+  .card-label { font-size: 12px; color: var(--color-text-secondary); margin: 0 0 4px; }
+  .card-val { font-size: 22px; font-weight: 500; color: var(--color-text-primary); margin: 0; }
+  .card-sub { font-size: 11px; color: var(--color-text-tertiary); margin: 2px 0 0; }
+  .badge { display: inline-block; font-size: 11px; padding: 2px 8px; border-radius: var(--border-radius-md); margin-left: 6px; }
+  .badge-up { background: var(--color-background-danger); color: var(--color-text-danger); }
+  .badge-low { background: var(--color-background-success); color: var(--color-text-success); }
+  .table-wrap { border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-lg); overflow: hidden; margin-bottom: 1.5rem; }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  th { background: var(--color-background-secondary); font-weight: 500; color: var(--color-text-secondary); text-align: left; padding: 8px 12px; border-bottom: 0.5px solid var(--color-border-tertiary); }
+  td { padding: 8px 12px; color: var(--color-text-primary); border-bottom: 0.5px solid var(--color-border-tertiary); }
+  tr:last-child td { border-bottom: none; }
+  tr:nth-child(even) td { background: var(--color-background-secondary); }
+  .pill-min { background: var(--color-background-success); color: var(--color-text-success); font-size: 11px; padding: 2px 7px; border-radius: 20px; }
+  .pill-max { background: var(--color-background-danger); color: var(--color-text-danger); font-size: 11px; padding: 2px 7px; border-radius: 20px; }
+  .chart-wrap { position: relative; width: 100%; margin-bottom: 1.5rem; }
+  .legend { display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 8px; font-size: 12px; color: var(--color-text-secondary); }
+  .legend span { display: flex; align-items: center; gap: 5px; }
+  .leg-dot { width: 10px; height: 10px; border-radius: 2px; flex-shrink: 0; }
+  .footer { border-top: 0.5px solid var(--color-border-tertiary); padding-top: 1rem; font-size: 12px; color: var(--color-text-tertiary); text-align: center; }
+</style>
+
+<div class="rel-wrap">
+
+  <div class="header">
+    <h1>Monitoramento de Preços de Combustíveis</h1>
+    <p>Vila Velha — ES &nbsp;|&nbsp; Fevereiro a Março de 2026 &nbsp;|&nbsp; 6 postos monitorados</p>
+  </div>
+
+  <div class="section-title">Resumo do período</div>
+  <div class="cards">
+    <div class="card">
+      <p class="card-label">Gasolina comum</p>
+      <p class="card-val">R$ 6,30</p>
+      <p class="card-sub">Maior preço registrado</p>
+    </div>
+    <div class="card">
+      <p class="card-label">Menor gasolina comum</p>
+      <p class="card-val">R$ 5,90</p>
+      <p class="card-sub">Network Marcela · Interlagos</p>
+    </div>
+    <div class="card">
+      <p class="card-label">Menor etanol</p>
+      <p class="card-val">R$ 3,96</p>
+      <p class="card-sub">Network Marcela · Interlagos</p>
+    </div>
+    <div class="card">
+      <p class="card-label">Postos monitorados</p>
+      <p class="card-val">6</p>
+      <p class="card-sub">108 coletas totais</p>
+    </div>
+  </div>
+
+  <div class="section-title">Evolução do preço — Gasolina Comum (Posto FLAP)</div>
+  <div class="legend">
+    <span><span class="leg-dot" style="background:#378ADD"></span>Gasolina Comum</span>
+  </div>
+  <div class="chart-wrap" style="height:200px">
+    <canvas id="evolChart"></canvas>
+  </div>
+
+  <div class="section-title">Preço médio por posto</div>
+  <div class="legend">
+    <span><span class="leg-dot" style="background:#378ADD"></span>Gasolina Comum</span>
+    <span><span class="leg-dot" style="background:#1D9E75"></span>Gasolina Aditivada</span>
+    <span><span class="leg-dot" style="background:#EF9F27"></span>Etanol</span>
+    <span><span class="leg-dot" style="background:#E24B4A"></span>Diesel</span>
+  </div>
+  <div class="chart-wrap" style="height:320px">
+    <canvas id="medioChart"></canvas>
+  </div>
+
+  <div class="section-title">Menor e maior preço por tipo de combustível</div>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Tipo</th>
+          <th>Menor preço</th>
+          <th>Posto (menor)</th>
+          <th>Maior preço</th>
+          <th>Posto (maior)</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Gasolina Comum</td>
+          <td><span class="pill-min">R$ 5,90</span></td>
+          <td>Network Marcela · Interlagos</td>
+          <td><span class="pill-max">R$ 6,59</span></td>
+          <td>Posto Shell · Praia de Itaparica</td>
+        </tr>
+        <tr>
+          <td>Gasolina Aditivada</td>
+          <td><span class="pill-min">R$ 6,05</span></td>
+          <td>Posto Boulevard · Itaparica</td>
+          <td><span class="pill-max">R$ 6,94</span></td>
+          <td>Posto FLAP / Leme · Barra do Jucu</td>
+        </tr>
+        <tr>
+          <td>Etanol</td>
+          <td><span class="pill-min">R$ 3,96</span></td>
+          <td>Network Marcela · Interlagos</td>
+          <td><span class="pill-max">R$ 5,23</span></td>
+          <td>Posto Shell Prime · Itaparica</td>
+        </tr>
+        <tr>
+          <td>Diesel</td>
+          <td><span class="pill-min">R$ 6,03</span></td>
+          <td>Network Marcela / Posto FLAP</td>
+          <td><span class="pill-max">R$ 6,90</span></td>
+          <td>Posto Shell Prime · Itaparica</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="section-title">Preços mais recentes (última coleta por posto)</div>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Posto</th>
+          <th>Bairro</th>
+          <th>Gasolina Comum</th>
+          <th>Aditivada</th>
+          <th>Etanol</th>
+          <th>Diesel</th>
+          <th>Data</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>Network Marcela</td><td>Interlagos</td><td>R$ 6,49</td><td>R$ 6,69</td><td>R$ 4,99</td><td>R$ 6,89</td><td>31/03</td></tr>
+        <tr><td>Posto FLAP</td><td>Barra do Jucu</td><td>R$ 6,54</td><td>R$ 6,94</td><td>R$ 5,19</td><td>R$ 6,89</td><td>31/03</td></tr>
+        <tr><td>Posto Leme Shell</td><td>Barra do Jucu</td><td>R$ 6,54</td><td>R$ 6,94</td><td>R$ 5,19</td><td>R$ 6,89</td><td>31/03</td></tr>
+        <tr><td>Posto Shell Prime</td><td>Praia Itaparica</td><td>R$ 6,57</td><td>R$ 6,57</td><td>R$ 4,70</td><td>R$ 6,11</td><td>26/03</td></tr>
+        <tr><td>Posto Shell</td><td>Praia Itaparica</td><td>R$ 6,59</td><td>R$ 6,59</td><td>R$ 4,35</td><td>R$ 6,10</td><td>21/03</td></tr>
+        <tr><td>Posto Boulevard</td><td>Praia Itaparica</td><td>R$ 6,42</td><td>R$ 6,72</td><td>R$ 4,38</td><td>R$ 6,11</td><td>25/03</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="section-title">Impacto da guerra EUA-Irã nos preços</div>
+  <div style="background: var(--color-background-danger); border-radius: var(--border-radius-md); padding: 0.75rem 1rem; margin-bottom: 1.5rem; font-size: 13px; color: var(--color-text-danger);">
+    A partir de 28/02/2026, com o início do conflito militar entre EUA e Irã, o petróleo ultrapassou US$ 100/barril. Em Vila Velha, a gasolina comum subiu em média <strong>R$ 0,60/litro</strong> entre fevereiro e março, representando alta de cerca de <strong>10%</strong> no período.
+  </div>
+
+  <div class="footer">
+    Dados coletados em 6 postos de Vila Velha — ES &nbsp;|&nbsp; Fonte: levantamento próprio (Fev–Mar 2026) &nbsp;|&nbsp; Universidade de Vila Velha
+  </div>
+
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script>
+const isDark = matchMedia('(prefers-color-scheme: dark)').matches;
+const gridColor = isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)';
+const textColor = isDark ? '#aaa' : '#666';
+
+new Chart(document.getElementById('evolChart'), {
+  type: 'line',
+  data: {
+    labels: ['02/02','12/02','19/02','28/02','12/03','24/03','31/03'],
+    datasets: [{
+      label: 'Gasolina Comum',
+      data: [6.06, 5.94, 6.08, 6.15, 6.22, 6.30, 6.54],
+      borderColor: '#378ADD',
+      backgroundColor: 'rgba(55,138,221,0.08)',
+      fill: true,
+      tension: 0.4,
+      pointRadius: 4,
+      pointBackgroundColor: '#378ADD'
+    }]
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: { legend: { display: false } },
+    scales: {
+      x: { grid: { color: gridColor }, ticks: { color: textColor, font: { size: 11 } } },
+      y: { min: 5.7, max: 6.7, grid: { color: gridColor }, ticks: { color: textColor, font: { size: 11 }, callback: v => 'R$ ' + v.toFixed(2) } }
+    }
+  }
+});
+
+new Chart(document.getElementById('medioChart'), {
+  type: 'bar',
+  data: {
+    labels: ['Network Marcela', 'Posto Boulevard', 'Posto FLAP', 'Posto Leme Shell', 'Posto Shell', 'Shell Prime'],
+    datasets: [
+      { label: 'Gasolina Comum',    data: [6.15, 6.21, 6.20, 6.30, 6.30, 6.31], backgroundColor: '#378ADD' },
+      { label: 'Gasolina Aditivada',data: [6.31, 6.47, 6.50, 6.58, 6.36, 6.35], backgroundColor: '#1D9E75' },
+      { label: 'Etanol',            data: [4.38, 4.49, 4.46, 4.51, 4.37, 4.58], backgroundColor: '#EF9F27' },
+      { label: 'Diesel',            data: [6.28, 6.25, 6.26, 6.28, 6.27, 6.27], backgroundColor: '#E24B4A' }
+    ]
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: { legend: { display: false } },
+    scales: {
+      x: { grid: { color: gridColor }, ticks: { color: textColor, font: { size: 10 }, maxRotation: 30 } },
+      y: { min: 3.5, grid: { color: gridColor }, ticks: { color: textColor, font: { size: 11 }, callback: v => 'R$ ' + v.toFixed(2) } }
+    }
+  }
+});
+</script>
